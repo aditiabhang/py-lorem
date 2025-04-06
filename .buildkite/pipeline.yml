@@ -1,3 +1,48 @@
+# steps:
+#   - label: "Generate sentence (max 20 chars)"
+#     key: sentence-step
+#     plugins:
+#       - docker#v5.10.0:
+#           image: python:3.13
+#           always-pull: true
+#     commands:
+#       - pip install py-lorem
+#       - python -c "from loremipsum import sentence; print(sentence(max_char=20))" > sentence.txt
+#     artifact_paths:
+#       - sentence.txt
+
+#   - label: "Annotate sentence"
+#     depends_on: sentence-step
+#     commands:
+#       - buildkite-agent artifact download sentence.txt .
+#       - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat sentence.txt)"
+
+#   - label: "Generate paragraph (max 100 chars)"
+#     key: paragraph-step
+#     depends_on: sentence-step
+#     plugins:
+#       - docker#v5.10.0:
+#           image: python:3.13
+#           always-pull: true
+#     commands:
+#       - pip install py-lorem
+#       - python -c "from loremipsum import paragraph; print(paragraph(max_char=100))" > paragraph.txt
+#     artifact_paths:
+#       - paragraph.txt
+
+#   - label: "Annotate paragraph"
+#     depends_on: paragraph-step
+#     commands:
+#       - buildkite-agent artifact download paragraph.txt .
+#       - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat paragraph.txt)"
+
+
+# ---------------------------------------------------------
+# ---------------------------------------------------------
+# Using Pythhon 3.13 with py-lorem
+# ---------------------------------------------------------
+# ---------------------------------------------------------
+
 steps:
   - label: "Generate sentence (max 20 chars)"
     key: sentence-step
@@ -7,31 +52,12 @@ steps:
           always-pull: true
     commands:
       - pip install py-lorem
-      - python -c "from loremipsum import sentence; print(sentence(max_char=20))" > sentence.txt
+      - python -c "from loremipsum import sentence; result = sentence(max_char=20); print(result); open('result.txt', 'w').write(result)"
     artifact_paths:
-      - sentence.txt
+      - result.txt
 
   - label: "Annotate sentence"
     depends_on: sentence-step
     commands:
-      - buildkite-agent artifact download sentence.txt .
-      - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat sentence.txt)"
-
-  - label: "Generate paragraph (max 100 chars)"
-    key: paragraph-step
-    depends_on: sentence-step
-    plugins:
-      - docker#v5.10.0:
-          image: python:3.13
-          always-pull: true
-    commands:
-      - pip install py-lorem
-      - python -c "from loremipsum import paragraph; print(paragraph(max_char=100))" > paragraph.txt
-    artifact_paths:
-      - paragraph.txt
-
-  - label: "Annotate paragraph"
-    depends_on: paragraph-step
-    commands:
-      - buildkite-agent artifact download paragraph.txt .
-      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat paragraph.txt)"
+      - buildkite-agent artifact download result.txt .
+      - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat result.txt)"
