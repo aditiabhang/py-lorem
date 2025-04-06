@@ -1,21 +1,24 @@
 steps:
-  - label: "Run loremipsum.sentence"
+  - label: ":speech_balloon: Generate sentence (max 20 chars)"
+    key: sentence-step
     plugins:
-      - docker#v3.8.0:
-          image: "python:3.13"
-    command:
-      - |
-        echo 'from loremipsum import sentence; print(sentence(max_char=20))' > script.py
-        python script.py > result.txt
-        buildkite-agent annotate --style "info" --context "sentence" < result.txt
+      - docker#v5.10.0:
+          image: python:3.13
+          always-pull: true
+          shell: ["/bin/bash", "-e", "-c"]
+    commands:
+      - pip install py-lorem
+      - python -c "from loremipsum import sentence; print(sentence(max_char=20))" > result.txt
+      - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat result.txt)"
 
-  - label: "Run loremipsum.paragraph"
+  - label: ":page_facing_up: Generate paragraph (max 100 chars)"
+    depends_on: sentence-step
     plugins:
-      - docker#v3.8.0:
-          image: "python:3.13"
-    command:
-      - |
-        echo 'from loremipsum import paragraph; print(paragraph(max_char=100))' > script.py
-        python script.py > paragraph.txt
-        buildkite-agent annotate --style "info" --context "paragraph" < paragraph.txt
-    depends_on: "Run loremipsum.sentence"
+      - docker#v5.10.0:
+          image: python:3.13
+          always-pull: true
+          shell: ["/bin/bash", "-e", "-c"]
+    commands:
+      - pip install py-lorem
+      - python -c "from loremipsum import paragraph; print(paragraph(max_char=100))" > result.txt
+      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat result.txt)"
