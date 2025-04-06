@@ -1,24 +1,35 @@
 steps:
-  - label: ":speech_balloon: Generate sentence (max 20 chars)"
+  - label: "Generate sentence (max 20 chars)"
     key: sentence-step
     plugins:
       - docker#v5.10.0:
           image: python:3.13
           always-pull: true
-          shell: ["/bin/bash", "-e", "-c"]
     commands:
       - pip install py-lorem
       - python -c "from loremipsum import sentence; print(sentence(max_char=20))" > result.txt
+    artifact_paths:
+      - result.txt
+
+  - label: "Annotate sentence"
+    depends_on: sentence-step
+    commands:
       - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat result.txt)"
 
-  - label: ":page_facing_up: Generate paragraph (max 100 chars)"
+  - label: "Generate paragraph (max 100 chars)"
+    key: paragraph-step
     depends_on: sentence-step
     plugins:
       - docker#v5.10.0:
           image: python:3.13
           always-pull: true
-          shell: ["/bin/bash", "-e", "-c"]
     commands:
       - pip install py-lorem
       - python -c "from loremipsum import paragraph; print(paragraph(max_char=100))" > result.txt
+    artifact_paths:
+      - result.txt
+
+  - label: "Annotate paragraph"
+    depends_on: paragraph-step
+    commands:
       - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat result.txt)"
