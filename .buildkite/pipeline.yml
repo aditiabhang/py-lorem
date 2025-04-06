@@ -44,7 +44,7 @@
 # ---------------------------------------------------------
 
 steps:
-  - label: "Generate sentence (max 20 chars)"
+  - label: ":eye-in-speech-bubble: Generate sentence (max 20 chars)"
     key: sentence-step
     plugins:
       - docker#v5.10.0:
@@ -56,13 +56,13 @@ steps:
     artifact_paths:
       - sentence.txt
 
-  - label: "Annotate sentence"
+  - label: ":pencil: Annotate sentence"
     depends_on: sentence-step
     commands:
       - buildkite-agent artifact download sentence.txt .
       - buildkite-agent annotate --style 'info' --context 'sentence-output' "**Sentence:** $(cat sentence.txt)"
 
-  - label: "Generate paragraph (max 100 chars)"
+  - label: ":open_book: Generate paragraph (max 100 chars)"
     key: paragraph-step
     depends_on: sentence-step
     plugins:
@@ -75,7 +75,7 @@ steps:
     artifact_paths:
       - paragraph.txt
   
-  - label: "Annotate paragraph"
+  - label: ":pencil: Annotate paragraph"
     depends_on: paragraph-step
     commands:
       - buildkite-agent artifact download paragraph.txt .
