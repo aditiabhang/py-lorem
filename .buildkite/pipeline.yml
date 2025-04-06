@@ -1,5 +1,5 @@
 steps:
-  - label: "Generate sentence (max 20 chars)"
+  - label: ":speech_balloon: Generate sentence (max 20 chars)"
     key: sentence-step
     plugins:
       - docker#v5.10.0:
@@ -11,12 +11,13 @@ steps:
     artifact_paths:
       - result.txt
 
-  - label: "Annotate sentence"
+  - label: ":memo: Annotate sentence"
     depends_on: sentence-step
     commands:
+      - buildkite-agent artifact download result.txt .
       - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat result.txt)"
 
-  - label: "Generate paragraph (max 100 chars)"
+  - label: ":page_facing_up: Generate paragraph (max 100 chars)"
     key: paragraph-step
     depends_on: sentence-step
     plugins:
@@ -29,7 +30,8 @@ steps:
     artifact_paths:
       - result.txt
 
-  - label: "Annotate paragraph"
+  - label: ":memo: Annotate paragraph"
     depends_on: paragraph-step
     commands:
+      - buildkite-agent artifact download result.txt .
       - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat result.txt)"
