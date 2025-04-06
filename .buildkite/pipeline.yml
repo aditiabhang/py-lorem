@@ -60,7 +60,7 @@ steps:
     depends_on: sentence-step
     commands:
       - buildkite-agent artifact download sentence.txt .
-      - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat sentence.txt)"
+      - buildkite-agent annotate --style 'info' --context 'sentence-output' "**Sentence:** $(cat sentence.txt)"
 
   - label: "Generate paragraph (max 100 chars)"
     key: paragraph-step
@@ -79,4 +79,4 @@ steps:
     depends_on: paragraph-step
     commands:
       - buildkite-agent artifact download paragraph.txt .
-      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat paragraph.txt)"
+      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "**Paragraph:** $(cat paragraph.txt)"
