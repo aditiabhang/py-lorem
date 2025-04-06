@@ -61,3 +61,22 @@ steps:
     commands:
       - buildkite-agent artifact download result.txt .
       - buildkite-agent annotate --style 'info' --context 'sentence-output' "$(cat result.txt)"
+
+  - label: "Generate paragraph (max 100 chars)"
+    key: paragraph-step
+    depends_on: sentence-step
+    plugins:
+      - docker#v5.10.0:
+          image: python:3.13
+          always-pull: true
+    commands:
+      - pip install py-lorem
+      - python -c "from loremipsum import paragraph; result = paragraph(max_char=100); print(result); open('result.txt', 'w').write(result)"
+    artifact_paths:
+      - result.txt
+  
+  - label: "Annotate paragraph"
+    depends_on: paragraph-step
+    commands:
+      - buildkite-agent artifact download result.txt .
+      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat result.txt)"
