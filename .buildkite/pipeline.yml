@@ -79,4 +79,4 @@ steps:
     depends_on: paragraph-step
     commands:
       - buildkite-agent artifact download paragraph.txt .
-      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat result.txt)"
+      - buildkite-agent annotate --style 'info' --context 'paragraph-output' "$(cat paragraph.txt)"
