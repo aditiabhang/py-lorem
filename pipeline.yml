@@ -1,0 +1,17 @@
+steps:
+  - label: "Run loremipsum.sentence"
+    plugins:
+      - docker#v3.8.0:
+          image: "python:3.13"
+    command:
+      - python -c "from loremipsum import sentence; print(sentence(max_char=20))" > result.txt
+      - buildkite-agent annotate --style "info" --context "sentence" < result.txt
+
+  - label: "Run loremipsum.paragraph"
+    plugins:
+      - docker#v3.8.0:
+          image: "python:3.13"
+    command:
+      - python -c "from loremipsum import paragraph; print(paragraph(max_char=100))" > paragraph.txt
+      - buildkite-agent annotate --style "info" --context "paragraph" < paragraph.txt
+    depends_on: "Run loremipsum.sentence"
