@@ -1,5 +1,6 @@
 steps:
-  - label: ":snake: Run loremipsum.sentence"
+  - label: "run-loremipsum-sentence"
+    key: "run_sentence" # Define a valid key for this step
     plugins:
       - docker#v3.8.0:
           image: "python:3.13"
@@ -7,12 +8,12 @@ steps:
       - python -c "from loremipsum import sentence; print(sentence(max_char=20))" > result.txt
       - buildkite-agent annotate --style "info" --context "sentence" < result.txt
 
-  - label: ":snake: Run loremipsum.paragraph"
+  - label: "run-loremipsum-paragraph"
+    key: "run_paragraph" # Define a valid key for this step
     plugins:
       - docker#v3.8.0:
           image: "python:3.13"
     commands:
       - python -c "from loremipsum import paragraph; print(paragraph(max_char=100))" > paragraph.txt
       - buildkite-agent annotate --style "info" --context "paragraph" < paragraph.txt
-    depends_on:
-      - ":snake: Run loremipsum.sentence"
+    depends_on: "run_sentence" # Reference the key of the first step
