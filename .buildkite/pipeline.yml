@@ -1,4 +1,5 @@
 steps:
+  # Step 1: Generate a Sentence and Upload it as an Artifact (Sentence.txt)
   - label: ":eye-in-speech-bubble: Generate sentence (max 20 chars)"
     key: sentence-step
     plugins:
@@ -10,13 +11,17 @@ steps:
       - python -c "from loremipsum import sentence; result = sentence(max_char=20); print(result); open('sentence.txt', 'w').write(result)"
     artifact_paths:
       - sentence.txt
-
+  
+  # Step 2: Annotate the Sentence in the Buildkite UI
+  # This step depends on the completion of the sentence generation step
   - label: ":pencil: Annotate sentence"
     depends_on: sentence-step
     commands:
       - buildkite-agent artifact download sentence.txt .
       - buildkite-agent annotate --style 'info' --context 'sentence-output' "**Sentence:** $(cat sentence.txt)"
 
+  # Step 3: Generate a Paragraph and Upload it as an Artifact (Paragraph.txt)
+  # This step depends on the completion of the sentence generation step
   - label: ":open_book: Generate paragraph (max 100 chars)"
     key: paragraph-step
     depends_on: sentence-step
@@ -29,7 +34,9 @@ steps:
       - python -c "from loremipsum import paragraph; result = paragraph(max_char=100); print(result); open('paragraph.txt', 'w').write(result)"
     artifact_paths:
       - paragraph.txt
-  
+
+  # Step 4: Annotate the Paragraph in the Buildkite UI
+  # This step depends on the completion of the paragraph generation step
   - label: ":pencil: Annotate paragraph"
     depends_on: paragraph-step
     commands:
