@@ -2,7 +2,7 @@ steps:
   - label: ":eye-in-speech-bubble: Generate sentence (max 20 chars)"
     key: sentence-step
     plugins:
-      - docker#v5.12.0:
+      - docker#v5.10.0:
           image: python:3.13
           always-pull: true
     commands:
@@ -21,7 +21,7 @@ steps:
     key: paragraph-step
     depends_on: sentence-step
     plugins:
-      - docker#v5.12.0:
+      - docker#v5.10.0:
           image: python:3.13
           always-pull: true
     commands:
